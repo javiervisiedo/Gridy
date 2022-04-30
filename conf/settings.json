@@ -1,0 +1,33 @@
+{
+    "metamask_address": "0x174BA736AF8808F8283D6beFC01cB6C6976D5F91",
+    "metamask_private_key": "YOUR-PRIVATE-KEY" ,
+
+    "router_address": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+
+    "RPC": "https://bsc-dataseed.binance.org/",
+
+    "tokens": [
+        "https://tokens.pancakeswap.finance/pancakeswap-extended.json",
+        "https://tokens.pancakeswap.finance/pancakeswap-top-100.json"
+    ],
+
+    "GWEI_GAS": 250,
+
+    "max_tx_fee": 1,
+    "slippage": 20,
+
+    "min_liquidity": 100,
+
+    "max_sell_tax": 0,
+    "min_sell_tax": 0,
+
+    "base_currency": "0x7ad7242A99F21aa543F9650A56D141C57e4F6081",
+    "quote_currency": "BUSD",
+
+    "max_amount_available": 100.0,
+
+    "number_of_grids": 20,
+
+    "min_range_price": 10.0,
+    "max_range_price": 14.5
+}
