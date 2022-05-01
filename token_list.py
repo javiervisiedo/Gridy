@@ -30,25 +30,21 @@ class TokenList():
         self.__initialized = True
         self.tokens_by_symbol = {}
         self.tokens_by_address = {}
+        print ("Loading default token list", end=' ')
         for url in settings.tokens:
-            print (f"Loading token list from {url}...")
+            print (".", end='')
             raw_token_list = self.load_token_list_from_url(url)
             if raw_token_list != None:
                 self.init_token_list(json.loads(raw_token_list))
-#        try:
-#            with open("conf/BSC-vetted-tokenlist.json", "r") as vetted_list_file:
-#                print("Loading vetted token list...")
-#                self.init_token_list(json.load(vetted_list_file))
-#        except OSError as e:
-#            print >> sys.stderr, 
-#            "Warining: Could not load vetted token list %s" % str(e)
-        
+        print(style().GREEN + " [OK]" + style().RESET)
         try:
+            print ("Loading user defined token list .", end='')
             with open("conf/BSC-user-tokenlist.json", "r") as user_list_file:
-                print ("Loading user defined token list...")
                 self.init_token_list(json.load(user_list_file))
+                print(style().GREEN + " [OK]" + style().RESET)
         except OSError as e:
-            print(f"\tWarining: Could not load user token list {str(e)}", 
+            print(style().RED + " [NOK]" + style().RESET)
+            print(f"\tCould not load user token list {str(e)}", 
                 file=sys.stderr)
         self.validate_config_pair()
 
@@ -100,7 +96,7 @@ class TokenList():
         settings.quote_currency = validate(settings.quote_currency)
 
     def add_custom_token(self, address, name, symbol, decimals, chainId):
-        print ("Adding custom token to known tokens list...")
+        print (f"Adding {name} to known tokens list", end=" ")
         try:
             with open("conf/BSC-user-tokenlist.json", "r+") as user_list_file:
                 token_list = json.load(user_list_file)
@@ -113,7 +109,9 @@ class TokenList():
                 })
                 user_list_file.seek(0)
                 json.dump(token_list, user_list_file, indent=4)
+                print(style().GREEN + " [OK]" + style().RESET)
 
         except OSError as e:
-            print(f"\tWarining: Could not load user token list {str(e)}", 
+            print(style().RED + " [NOK]" + style().RESET)
+            print(f"\tCould not load user token list {str(e)}", 
                 file=sys.stderr)
