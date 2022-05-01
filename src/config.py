@@ -10,11 +10,12 @@
 @Desc    :   None
 '''
 
-from dataclasses import dataclass
-import json
 import argparse
+import json
 import sys
+from dataclasses import dataclass
 from typing import List
+
 
 @dataclass
 class Settings():
@@ -55,6 +56,11 @@ class Settings():
 
     paper_trade: bool = False
 
+def config_error(msg, is_fatal=False):
+    print(msg, file=sys.stderr)
+    if is_fatal:
+        sys.exit(1)
+
 def ConfigParser(s):
     def load_from_config_or_cmdline(
         key,
@@ -78,54 +84,46 @@ def ConfigParser(s):
 
     s.mm_address = json_settings.get("metamask_address")
     if s.mm_address == None:
-        print >> sys.stderr, "Fatal error: a valid Metamask wallet address \
-            must be present in the config file"
-        sys.exit(1)
+        config_error("Fatal error: a valid Metamask wallet address \
+                    must be present in the config file", is_fatal=True)
 
     s.mm_private_key = json_settings.get("metamask_private_key")
     if s.mm_private_key == None:
-        print >> sys.stderr, "Fatal error: the Wallet private key \
-            must be present in the config file"
-        sys.exit(1)
+        config_error("Fatal error: the Wallet private key \
+                    must be present in the config file", is_fatal=True)
 
     s.rpc = json_settings.get("RPC")
     if s.rpc == None:
-        print >> sys.stderr, "Fatal error: the RPC end point \
-            must be present in the config file"
-        sys.exit(1)
+        config_error("Fatal error: the RPC end point \
+                    must be present in the config file", is_fatal=True)
     
     if json_settings.get("max_sell_tax") != None:
         s.tokens = json_settings.get("tokens")
 
     s.router_address = json_settings.get("router_address")
     if s.router_address == None:
-        print >> sys.stderr, "Fatal error: the router address \
-            must be present in teh config file"
-        sys.exit(1)
-
+        config_error("Fatal error: the router address \
+                    must be present in teh config file", is_fatal=True)
+    
     s.gwei_gas = json_settings.get("GWEI_GAS")
     if s.gwei_gas == None:
-        print >> sys.stderr, "Fatal error: The GWEI gas value \
-            must be present in the config file"
-        sys.exit(1)
+        config_error("Fatal error: The GWEI gas value \
+                    must be present in the config file", is_fatal=True)
 
     s.max_tx_fee = json_settings.get("max_tx_fee")
     if s.max_tx_fee == None:
-        print >> sys.stderr, "Fatal error: the max transaction fee value \
-            must be present in the config file"
-        sys.exit(1)
+        config_error("Fatal error: the max transaction fee value \
+                    must be present in the config file", is_fatal=True)
 
     s.slippage = json_settings.get("slippage")
     if s.slippage == None:
-        print >> sys.stderr, "Fatal error: the maximun slippage value \
-            must be present in the config file"
-        sys.exit(1)
+        config_error("Fatal error: the maximun slippage value \
+                    must be present in the config file", is_fatal=True)
 
     s.min_liquidity = json_settings.get("min_liquidity")
     if s.min_liquidity == None:
-        print >> sys.stderr, "Fatal error: the minimum liquidity amount \
-            must be present in the config file"
-        sys.exit(1)
+        config_error("Fatal error: the minimum liquidity amount \
+                    must be present in the config file", is_fatal=True)
 
     if json_settings.get("max_sell_tax") != None:
         s.max_sell_tax = json_settings.get("max_sell_tax")
@@ -169,18 +167,17 @@ def loadSettings():
     try:
         f = open("conf/settings.json", "r")
     except FileNotFoundError as e:
-        print >> sys.stderr, "Fatal error: The config file \
-            './conf/settings.json' could not be found"
-        print >> sys.stderr, "Exception: %s" % str(e)
-        sys.exit(1)
+        config_error(f"Fatal error: The config file \
+                    './conf/settings.json' could not be found {str(e)}", 
+                    is_fatal=True)
+
     with f:
         try:
             json_settings = json.load(f)
         except ValueError as e:
-            print >> sys.stderr, "Fatal error: Syntax error on \
-                './conf/settings.json' config file"
-            print >> sys.stderr, "Exception: %s" % str(e)
-            sys.exit(1)
+            config_error(f"Fatal error: Syntax error on \
+                        './conf/settings.json' config file {str(e)}", 
+                        is_fatal=True)
     f.close()
     return json_settings
 

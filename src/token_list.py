@@ -11,12 +11,13 @@
 '''
 
 import json
-import requests
 import sys
+
+import requests
+from web3 import Web3
+
 from config import settings
 from style import style
-from config import settings
-from web3 import Web3
 
 BSC_MAINNET = 56
 BSC_TESTNET = 97
@@ -72,13 +73,13 @@ class TokenList():
                 self.tokens_by_symbol[token["symbol"]] = dict(
                     name = token["name"],
                     address = token["address"],
-                    chainID = token["chainId"],
+                    chainId = token["chainId"],
                     decimals = token["decimals"]
                 )
                 self.tokens_by_address[token["address"]] = dict(
                     name = token["name"],
                     symbol = token["symbol"],
-                    chainID = token["chainId"],
+                    chainId = token["chainId"],
                     decimals = token["decimals"]
                 )
 

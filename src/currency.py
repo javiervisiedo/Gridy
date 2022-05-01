@@ -13,25 +13,30 @@
 from web3 import Web3
 import json
 from token_list import TokenList
+import sys
 
 class Token():
     def __init__(self, w3, token_id):
-        tl = TokenList()
         self.address = token_id
-        with open("./abi/" + self.address + ".json") as f:
-            self.abi = json.load(f)
-        self.contract = w3.eth.contract(self.address, abi=self.abi)
-        self.decimals = self.contract.functions.decimals().call()
-        self.name = self.contract.functions.name().call()
-        self.symbol = self.contract.functions.symbol().call()
-        
+        try:
+            with open("./abi/erc20.json") as f:
+                self.abi = json.load(f)
+            self.contract = w3.eth.contract(self.address, abi=self.abi)
+        except OSError as e:
+            print(f"\tCould not load token abi: {str(e)}", file=sys.stderr)
+            sys.exit(1)
+        tl = TokenList()
         if self.address not in tl.tokens_by_address:
             tl.add_custom_token(
                 self.address, 
-                self.name, 
-                self.symbol,
-                self.decimals,
-                w3.eth.chain_id)
+                self.contract.functions.name().call(), 
+                self.contract.functions.symbol().call(),
+                self.contract.functions.decimals().call(),
+                w3.eth.chain_id)    
+        self.name = tl.tokens_by_address[self.address]["name"]
+        self.symbol = tl.tokens_by_address[self.address]["symbol"]
+        self.decimals = tl.tokens_by_address[self.address]["decimals"]
+        self.chain_id = tl.tokens_by_address[self.address]["chainId"]
 
     def get_allowance(self, swaper_address):
         return self.contract.functions.allowance(self.address, 
