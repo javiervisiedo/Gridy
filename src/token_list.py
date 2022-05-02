@@ -18,6 +18,9 @@ from web3 import Web3
 
 from config import settings
 from style import style
+from os import path
+
+CURRENT_DIR = path.dirname(__file__)
 
 BSC_MAINNET = 56
 BSC_TESTNET = 97
@@ -40,7 +43,7 @@ class TokenList():
         print(style().GREEN + " [OK]" + style().RESET)
         try:
             print ("Loading user defined token list .", end='')
-            with open("conf/BSC-user-tokenlist.json", "r") as user_list_file:
+            with open(CURRENT_DIR + "/conf/BSC-user-tokenlist.json", "r") as user_list_file:
                 self.init_token_list(json.load(user_list_file))
                 print(style().GREEN + " [OK]" + style().RESET)
         except OSError as e:
@@ -99,7 +102,7 @@ class TokenList():
     def add_custom_token(self, address, name, symbol, decimals, chainId):
         print (f"Adding {name} to known tokens list", end=" ")
         try:
-            with open("conf/BSC-user-tokenlist.json", "r+") as user_list_file:
+            with open(CURRENT_DIR + "/conf/BSC-user-tokenlist.json", "r+") as user_list_file:
                 token_list = json.load(user_list_file)
                 token_list["tokens"].append({
                     "name": name,

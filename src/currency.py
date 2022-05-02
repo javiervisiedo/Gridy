@@ -15,11 +15,15 @@ import json
 from token_list import TokenList
 import sys
 
+from os import path
+
+CURRENT_DIR = path.dirname(__file__)
+
 class Token():
     def __init__(self, w3, token_id):
         self.address = token_id
         try:
-            with open("./abi/erc20.json") as f:
+            with open(CURRENT_DIR + "/abi/erc20.json") as f:
                 self.abi = json.load(f)
             self.contract = w3.eth.contract(self.address, abi=self.abi)
         except OSError as e:

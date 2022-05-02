@@ -12,13 +12,16 @@
 
 from web3 import Web3
 import json
-from config import settings
 from decimal import Decimal
+from os import getcwd
+from os import path
+
+CURRENT_DIR = path.dirname(__file__)
 
 class Router():
     def __init__(self, w3, router_address):
         self.address = Web3.toChecksumAddress(router_address)
-        with open("./abi/" + self.address + ".json") as f:
+        with open(CURRENT_DIR + "/abi/IPancakeRouter02.json") as f:
             self.abi = json.load(f)
         self.contract = w3.eth.contract(self.address, abi=self.abi)
 

@@ -15,7 +15,9 @@ import json
 import sys
 from dataclasses import dataclass
 from typing import List
+from os import path
 
+CURRENT_DIR = path.dirname(__file__)
 
 @dataclass
 class Settings():
@@ -80,7 +82,7 @@ def ConfigParser(s):
 
     json_settings = loadSettings()
     parser = loadCMDLineArgs()
-    cmd_line_args = parser.parse_args()
+    cmd_line_args, unknown = parser.parse_known_args()
 
     s.mm_address = json_settings.get("metamask_address")
     if s.mm_address == None:
@@ -165,20 +167,18 @@ def ConfigParser(s):
 
 def loadSettings():
     try:
-        f = open("conf/settings.json", "r")
+        f = open(CURRENT_DIR + "/conf/settings.json", "r")
     except FileNotFoundError as e:
         config_error(f"Fatal error: The config file \
-                    './conf/settings.json' could not be found {str(e)}", 
+                    '{CURRENT_DIR}/conf/settings.json' could not be found. {str(e)}", 
                     is_fatal=True)
-
     with f:
         try:
             json_settings = json.load(f)
         except ValueError as e:
-            config_error(f"Fatal error: Syntax error on \
-                        './conf/settings.json' config file {str(e)}", 
+            config_error("Syntax error on " \
+                        f"'{CURRENT_DIR}/conf/settings.json' config file. {str(e)}", 
                         is_fatal=True)
-    f.close()
     return json_settings
 
 def loadCMDLineArgs():
