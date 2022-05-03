@@ -1,0 +1,25 @@
+{
+  "name": "gridy",
+  "version": "0.0.1",
+  "description": "A grid trading bot written in Python for Uniswap fork\ndecentralized crypto exchanges",
+  "main": "src/gridy.py",
+  "scripts": {
+    "test": "gridy.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redmice/Gridy.git"
+  },
+  "keywords": [
+    "trading",
+    "bot",
+    "grid",
+    "dex"
+  ],
+  "author": "Javier G. Visiedo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/redmice/Gridy/issues"
+  },
+  "homepage": "https://github.com/redmice/Gridy#readme"
+}

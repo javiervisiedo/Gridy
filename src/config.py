@@ -4,7 +4,7 @@
 @File    :   config.py
 @Time    :   2022/04/23 19:45:14
 @Author  :   Javier G. Visiedo
-@Version :   1.0
+@Version :   0.0.1
 @Contact :   javier.g.visiedo@gmail.com
 @License :   (C)Copyright 2021-2022, RedMice
 @Desc    :   None
@@ -22,8 +22,9 @@ CURRENT_DIR = path.dirname(__file__)
 @dataclass
 class Settings():
     __instance = None
+    __initialized = False
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls):
         if not cls.__instance:
             cls.__instance = object.__new__(cls)
             cls.__instance.__initialized = False
@@ -33,8 +34,8 @@ class Settings():
         if self.__initialized:
             return
         self.__initialized = True
-        ConfigParser(self.__instance)
-    
+        config_parser(self.__instance)
+
     tokens: List[str]
     mm_address: str = ""
     mm_private_key: str = ""
@@ -63,7 +64,7 @@ def config_error(msg, is_fatal=False):
     if is_fatal:
         sys.exit(1)
 
-def ConfigParser(s):
+def config_parser(s):
     def load_from_config_or_cmdline(
         key,
         cmd_line_arg,
@@ -71,66 +72,66 @@ def ConfigParser(s):
         msg=""
     ):
         param = json_settings.get(key)
-        if cmd_line_arg != None:
+        if cmd_line_arg is not None:
             param = cmd_line_arg
-        if param == None or not valid(param):
+        if param is None or not valid(param):
             if msg != "":
                 print(msg)
             parser.print_usage(sys.stderr)
             sys.exit(1)
         return param
 
-    json_settings = loadSettings()
-    parser = loadCMDLineArgs()
+    json_settings = load_settings()
+    parser = load_command_line_argumenets()
     cmd_line_args, unknown = parser.parse_known_args()
 
     s.mm_address = json_settings.get("metamask_address")
-    if s.mm_address == None:
+    if s.mm_address is None:
         config_error("Fatal error: a valid Metamask wallet address \
                     must be present in the config file", is_fatal=True)
 
     s.mm_private_key = json_settings.get("metamask_private_key")
-    if s.mm_private_key == None:
+    if s.mm_private_key is None:
         config_error("Fatal error: the Wallet private key \
                     must be present in the config file", is_fatal=True)
 
     s.rpc = json_settings.get("RPC")
-    if s.rpc == None:
+    if s.rpc is None:
         config_error("Fatal error: the RPC end point \
                     must be present in the config file", is_fatal=True)
-    
-    if json_settings.get("max_sell_tax") != None:
+
+    if json_settings.get("max_sell_tax") is  not None:
         s.tokens = json_settings.get("tokens")
 
     s.router_address = json_settings.get("router_address")
-    if s.router_address == None:
+    if s.router_address is None:
         config_error("Fatal error: the router address \
                     must be present in teh config file", is_fatal=True)
-    
+
     s.gwei_gas = json_settings.get("GWEI_GAS")
-    if s.gwei_gas == None:
+    if s.gwei_gas is None:
         config_error("Fatal error: The GWEI gas value \
                     must be present in the config file", is_fatal=True)
 
     s.max_tx_fee = json_settings.get("max_tx_fee")
-    if s.max_tx_fee == None:
+    if s.max_tx_fee is None:
         config_error("Fatal error: the max transaction fee value \
                     must be present in the config file", is_fatal=True)
 
     s.slippage = json_settings.get("slippage")
-    if s.slippage == None:
+    if s.slippage is None:
         config_error("Fatal error: the maximun slippage value \
                     must be present in the config file", is_fatal=True)
 
     s.min_liquidity = json_settings.get("min_liquidity")
-    if s.min_liquidity == None:
+    if s.min_liquidity is None:
         config_error("Fatal error: the minimum liquidity amount \
                     must be present in the config file", is_fatal=True)
 
-    if json_settings.get("max_sell_tax") != None:
+    if json_settings.get("max_sell_tax") is  not None:
         s.max_sell_tax = json_settings.get("max_sell_tax")
 
-    if json_settings.get("min_sell_tax") != None:
+    if json_settings.get("min_sell_tax") is  not None:
         s.min_sell_tax = json_settings.get("min_sell_tax")
 
     s.base_currency = load_from_config_or_cmdline(
@@ -139,7 +140,7 @@ def ConfigParser(s):
             lambda x: x != "",
             "You must specify a base currency"
         )
-    
+
     s.quote_currency = load_from_config_or_cmdline(
             "quote_currency",
             cmd_line_args.quote,
@@ -165,30 +166,31 @@ def ConfigParser(s):
 
     s.paper_trade = cmd_line_args.paper_trade
 
-def loadSettings():
+def load_settings():
     try:
-        f = open(CURRENT_DIR + "/conf/settings.json", "r")
+        f = open(CURRENT_DIR + "/conf/settings.json", mode="r",
+        encoding="utf-8")
     except FileNotFoundError as e:
         config_error(f"Fatal error: The config file \
-                    '{CURRENT_DIR}/conf/settings.json' could not be found. {str(e)}", 
-                    is_fatal=True)
+                    '{CURRENT_DIR}/conf/settings.json' could not be found. \
+                    {str(e)}", is_fatal=True)
     with f:
         try:
             json_settings = json.load(f)
         except ValueError as e:
             config_error("Syntax error on " \
-                        f"'{CURRENT_DIR}/conf/settings.json' config file. {str(e)}", 
-                        is_fatal=True)
+                        f"'{CURRENT_DIR}/conf/settings.json' config file. \
+                        {str(e)}", is_fatal=True)
     return json_settings
 
-def loadCMDLineArgs():
-    def validateGrids(g):
+def load_command_line_argumenets():
+    def validate_grids(g):
         num_grids = int(g)
         if num_grids < 2 or num_grids > 200:
             raise argparse.ArgumentTypeError('invalid number of grids')
         return num_grids
 
-    def validateString(s):
+    def validate_string(s):
         string_value = str(s)
         if string_value == "":
             raise argparse.ArgumentTypeError(
@@ -200,13 +202,13 @@ def loadCMDLineArgs():
     )
     parser.add_argument(
         '-b', '--base',
-        type=validateString,
+        type=validate_string,
         help='Contract address for base currency. e.g. \
             "--base 0x7ad7242A99F21aa543F9650A56D141C57e4F6081"'
     )
     parser.add_argument(
         '-q', '--quote',
-        type=validateString,
+        type=validate_string,
         help='Contract address for quote currency. e.g. \
             "--quote 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"'
     )
@@ -216,7 +218,7 @@ def loadCMDLineArgs():
     )
     parser.add_argument(
         '-g', '--grids',
-        type=validateGrids,
+        type=validate_grids,
         help='Number of grids to setup (2-200). e.g. "--grids 10"'
     )
     parser.add_argument(

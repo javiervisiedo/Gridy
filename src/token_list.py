@@ -3,8 +3,8 @@
 '''
 @File    :   token-list.py
 @Time    :   2022/04/29 13:16:01
-@Author  :   Javier G. Visiedo 
-@Version :   1.0
+@Author  :   Javier G. Visiedo
+@Version :   0.0.1
 @Contact :   javier.g.visiedo@gmail.com
 @License :   (C)Copyright 2021-2022, RedMice
 @Desc    :   None
@@ -26,7 +26,27 @@ BSC_MAINNET = 56
 BSC_TESTNET = 97
 
 class TokenList():
+    """Singelton object holding information about all known token
+
+    TokenList is a singelton object, it gets constructed and initialized
+    just once, and holds information about the known tokens, both the trusted
+    tokens loaded from trusted sources, and those added by the user over time.
+
+    When the user specifies a new token to be traded, which is unknown, the
+    initializer fetches the token information from the blockchain, and stores
+    it in the user defined token list.
+
+    Args:
+        file_loc (str): The file location of the spreadsheet
+        print_cols (bool): A flag used to print the columns to the console
+            (default is False)
+
+    Returns:
+        list: a list of strings representing the header columns
+    """
+
     __instance = None
+    __initialized = False
 
     def __init__(self):
         if self.__initialized:
@@ -38,25 +58,26 @@ class TokenList():
         for url in settings.tokens:
             print (".", end='')
             raw_token_list = self.load_token_list_from_url(url)
-            if raw_token_list != None:
+            if raw_token_list is not None:
                 self.init_token_list(json.loads(raw_token_list))
         print(style().GREEN + " [OK]" + style().RESET)
         try:
             print ("Loading user defined token list .", end='')
-            with open(CURRENT_DIR + "/conf/BSC-user-tokenlist.json", "r") as user_list_file:
+            with open(CURRENT_DIR + "/conf/BSC-user-tokenlist.json", mode="r",
+                encoding="utf-8") as user_list_file:
                 self.init_token_list(json.load(user_list_file))
                 print(style().GREEN + " [OK]" + style().RESET)
         except OSError as e:
             print(style().RED + " [NOK]" + style().RESET)
-            print(f"\tCould not load user token list {str(e)}", 
+            print(f"\tCould not load user token list {str(e)}",
                 file=sys.stderr)
         self.validate_config_pair()
 
-    def __new__(self, *args, **kwargs):
-        if not self.__instance:
-            self.__instance = object.__new__(self)
-            self.__instance.__initialized = False
-        return self.__instance
+    def __new__(cls):
+        if not cls.__instance:
+            cls.__instance = object.__new__(cls)
+            cls.__instance.__initialized = False
+        return cls.__instance
 
     def load_token_list_from_url(self, url):
         try:
@@ -99,7 +120,7 @@ class TokenList():
         settings.base_currency = validate(settings.base_currency)
         settings.quote_currency = validate(settings.quote_currency)
 
-    def add_custom_token(self, address, name, symbol, decimals, chainId):
+    def add_custom_token(self, address, name, symbol, decimals, chain_id):
         print (f"Adding {name} to known tokens list", end=" ")
         try:
             with open(CURRENT_DIR + "/conf/BSC-user-tokenlist.json", "r+") as user_list_file:
@@ -108,7 +129,7 @@ class TokenList():
                     "name": name,
                     "symbol": symbol,
                     "address": address,
-                    "chainId": chainId,
+                    "chainId": chain_id,
                     "decimals": decimals
                 })
                 user_list_file.seek(0)
@@ -117,5 +138,5 @@ class TokenList():
 
         except OSError as e:
             print(style().RED + " [NOK]" + style().RESET)
-            print(f"\tCould not load user token list {str(e)}", 
+            print(f"\tCould not load user token list {str(e)}",
                 file=sys.stderr)

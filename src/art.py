@@ -4,7 +4,7 @@
 @File    :   art.py
 @Time    :   2022/04/23 23:03:56
 @Author  :   Javier G. Visiedo 
-@Version :   1.0
+@Version :   0.0.1
 @Contact :   javier.g.visiedo@gmail.com
 @License :   (C)Copyright 2021-2022, RedMice
 @Desc    :   None
