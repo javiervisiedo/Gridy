@@ -12,13 +12,13 @@
 
 import json
 import sys
+from os import path
 
 import requests
 from web3 import Web3
 
 from config import settings
 from style import style
-from os import path
 
 CURRENT_DIR = path.dirname(__file__)
 
@@ -36,18 +36,18 @@ class TokenList():
     initializer fetches the token information from the blockchain, and stores
     it in the user defined token list.
 
-    Args:
-        file_loc (str): The file location of the spreadsheet
-        print_cols (bool): A flag used to print the columns to the console
-            (default is False)
-
-    Returns:
-        list: a list of strings representing the header columns
+    Attributes:
+        __instance: singelton object
+        __initialized: bool indicating if the object is already initialized
+        tokens_by_symbol: dictionary of all known tokens keyed by symbol
+        tokens_by_address: dictionary of all known tokens keyed by ETH address
     """
 
     __instance = None
     __initialized = False
 
+    """Initializes the token dictionaries from the specified sources
+    """
     def __init__(self):
         if self.__initialized:
             return
@@ -79,7 +79,7 @@ class TokenList():
             cls.__instance.__initialized = False
         return cls.__instance
 
-    def load_token_list_from_url(self, url):
+    def load_token_list_from_url(self, url) -> str:
         try:
             response = requests.get(url)
             response.raise_for_status()
@@ -107,18 +107,18 @@ class TokenList():
                     decimals = token["decimals"]
                 )
 
-    def validate_config_pair(self):
-        def validate(token_id):
-            if not Web3.isAddress(token_id):
-                if token_id not in self.tokens_by_symbol:
-                    print(f"Fatal error: Could not find token symbol {token_id}. \
-                        Please provide the token address instead", file=sys.stderr)
-                    sys.exit(1)
-                token_id = self.tokens_by_symbol[token_id]["address"]
-            return Web3.toChecksumAddress(token_id)
+    def validate_token_address(self, token_id):
+        if not Web3.isAddress(token_id):
+            if token_id not in self.tokens_by_symbol:
+                print(f"Fatal error: Could not find token symbol {token_id}. \
+                       Please provide the token address instead", file=sys.stderr)
+                sys.exit(1)
+            token_id = self.tokens_by_symbol[token_id]["address"]
+        return Web3.toChecksumAddress(token_id)
 
-        settings.base_currency = validate(settings.base_currency)
-        settings.quote_currency = validate(settings.quote_currency)
+    def validate_config_pair(self):
+        settings.base_currency = self.validate_token_address(settings.base_currency)
+        settings.quote_currency = self.validate_token_address(settings.quote_currency)
 
     def add_custom_token(self, address, name, symbol, decimals, chain_id):
         print (f"Adding {name} to known tokens list", end=" ")

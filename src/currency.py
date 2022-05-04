@@ -22,7 +22,8 @@ CURRENT_DIR = path.dirname(__file__)
 
 class Token():
     def __init__(self, w3, token_id):
-        self.address = token_id
+        tl = TokenList()
+        self.address = tl.validate_token_address(token_id)
         try:
             with open(CURRENT_DIR + "/abi/erc20.json", encoding="utf-8") as f:
                 self.abi = json.load(f)
@@ -30,7 +31,6 @@ class Token():
         except OSError as e:
             print(f"\tCould not load token abi: {str(e)}", file=sys.stderr)
             sys.exit(1)
-        tl = TokenList()
         if self.address not in tl.tokens_by_address:
             tl.add_custom_token(
                 self.address,
@@ -46,3 +46,11 @@ class Token():
     def get_allowance(self, swaper_address):
         return self.contract.functions.allowance(self.address,
             swaper_address).call()
+
+    def print_token_info(self, heading=None):
+        if heading is not None:
+            print(heading)
+            print("="*len(heading))
+        print(f"{self.name} / {self.symbol}")
+        print(f"Contract: {self.address}")
+        print(f"Decimals: {self.decimals}\n")
