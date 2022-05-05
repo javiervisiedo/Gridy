@@ -43,14 +43,13 @@ class Token():
         self.decimals = tl.tokens_by_address[self.address]["decimals"]
         self.chain_id = tl.tokens_by_address[self.address]["chainId"]
 
+    def __str__(self):
+        return self.name + "\n" +\
+               "="*len(self.name) + "\n" +\
+               f"Symbol: {self.symbol}\n" +\
+               f"Contract: {self.address}\n" +\
+               f"Decimals: {self.decimals}\n"
+
     def get_allowance(self, swaper_address):
         return self.contract.functions.allowance(self.address,
             swaper_address).call()
-
-    def print_token_info(self, heading=None):
-        if heading is not None:
-            print(heading)
-            print("="*len(heading))
-        print(f"{self.name} / {self.symbol}")
-        print(f"Contract: {self.address}")
-        print(f"Decimals: {self.decimals}\n")

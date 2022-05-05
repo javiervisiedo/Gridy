@@ -1,6 +1,6 @@
 {
-    "metamask_address": "0x174BA736AF8808F8283D6beFC01cB6C6976D5F91",
-    "metamask_private_key": "YOUR-PRIVATE-KEY" ,
+    "metamask_address": "0x1a485E629c61313D9713F7Cd4d5236A0Ae74eC72",
+    "metamask_private_key": "878e0fac53d9bd786a509792a699b128aeea27e1d99000b710c2170c8cb6fb97" ,
 
     "router_address": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
 
@@ -24,10 +24,10 @@
     "base_currency": "0x7ad7242A99F21aa543F9650A56D141C57e4F6081",
     "quote_currency": "BUSD",
 
-    "max_amount_available": 100.0,
+    "max_amount_available": 1000.0,
 
-    "number_of_grids": 20,
+    "number_of_grids": 5,
 
-    "min_range_price": 10.0,
-    "max_range_price": 14.5
+    "min_range_price": 20.7,
+    "max_range_price": 21.12
 }

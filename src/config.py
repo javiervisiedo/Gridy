@@ -16,6 +16,7 @@ import sys
 from dataclasses import dataclass
 from typing import List
 from os import path
+from decimal import Decimal
 
 CURRENT_DIR = path.dirname(__file__)
 
@@ -49,10 +50,10 @@ class Settings():
 
     base_currency: str = ""
     quote_currency: str = ""
-    max_amount_available: int = 0
+    max_amount_available: Decimal = 0.0
     number_of_grids: int = 0
-    min_range_price: float = 0.0
-    max_range_price: float = 0.0
+    min_range_price: Decimal = 0.0
+    max_range_price: Decimal = 0.0
 
     max_sell_tax: int = 0
     min_sell_tax: int = 0

@@ -46,6 +46,14 @@ class Pair():
         self.token1 = token1
         self.router = router
         self.key, self.name = self.compose_pair_ids()
+    
+    def __str__(self):
+        return self.name + "\n" +\
+               "="*len(self.name) + "\n" +\
+               f"{self.token0.symbol} price: \
+               {round(self.get_token0_price(), 3)} {self.token1.symbol}\n" +\
+               f"{self.token1.symbol} price: \
+               {round(self.get_token1_price(), 3)} {self.token0.symbol}\n"
 
     def compose_pair_ids(self):
         key = self.router.name + \
@@ -100,11 +108,3 @@ class Pair():
         return (self.get_token0_price(amount)
                 if token is self.token0.address
                 else self.get_token1_price)
-
-    def print_pair_info(self):
-        print(self.name)
-        print("="*len(self.name))
-        print(f"{self.token0.symbol} price: \
-              {round(self.get_token0_price(), 3)} {self.token1.symbol}")
-        print(f"{self.token1.symbol} price: \
-              {round(self.get_token1_price(), 3)} {self.token0.symbol}\n")

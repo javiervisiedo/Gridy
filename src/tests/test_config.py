@@ -15,12 +15,13 @@ import sys
 sys.path.append(os.path.dirname(
                 os.path.dirname(os.path.realpath(__file__))
                 ))
+import config as conf
+
 import json
 import unittest
 from io import StringIO
 from unittest import TestCase, mock
 
-import config as conf
 
 
 class TestConfig(TestCase):
