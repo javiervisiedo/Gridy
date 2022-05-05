@@ -21,7 +21,7 @@ class Wallet():
         self.private_key = private_key
 
     def get_token_balance(self, token: Token) -> Decimal:
-        return Decimal(token.contract.functions.balanceOf(self.address).call() 
+        return Decimal(token.contract.functions.balanceOf(self.address).call()
                / (10 ** token.decimals))
 
     def get_eth_balance(self) -> Decimal:

@@ -45,7 +45,8 @@ Attributes:
         self.upper_limit = Decimal(upper_limit)
         self.amount = Decimal(amount)
         self.grids = grids
-        self.step_size = self.amount / Decimal(grids)
+        self.quote_ammount_per_grid = self.amount / Decimal(grids)
+        self.step_ammount = (upper_limit-lower_limit) / (self.grids-1)
         self.prices = self.calculate_grid_prices()
 
     def __str__(self):
@@ -55,7 +56,7 @@ Attributes:
             "="*len(f"{self.pair.name} grid parameters") + "\n" +\
             f"Lower limit price: {round(self.lower_limit, 2)} {self.pair.token1.symbol}\n" +\
             f"Upper limit price: {round(self.upper_limit, 2)} {self.pair.token1.symbol}\n" +\
-            f"Quantity per grid: {round(self.step_size, 2)} {self.pair.token1.symbol}\n" +\
+            f"Quantity per grid: {round(self.quote_ammount_per_grid, 2)} {self.pair.token1.symbol}\n" +\
             f"Requires around {round(ba, 2)} {self.pair.token0.name}, and {round(qa, 2)} {self.pair.token1.symbol}\n" +\
             "Grids:\n"
         current_price = self.pair.get_token0_price()
@@ -69,7 +70,7 @@ Attributes:
         return content
 
     def calculate_grid_prices(self) -> list[Decimal]:
-        return [(self.lower_limit + Decimal(self.step_size*i)) for i in range(self.grids)]
+        return [(self.lower_limit + Decimal(self.step_ammount*i)) for i in range(self.grids)]
 
     def calculate_required_amounts(self) -> Tuple[Decimal, Decimal]:
         current_price = self.pair.get_token0_price()
@@ -77,7 +78,7 @@ Attributes:
         quote_amount = Decimal(0)
         for price in self.prices:
             if price <= current_price:
-                quote_amount += self.step_size
+                quote_amount += self.quote_ammount_per_grid
             else:
-                base_amount += self.step_size / current_price
+                base_amount += self.quote_ammount_per_grid / current_price
         return base_amount, quote_amount
